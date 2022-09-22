@@ -31,7 +31,8 @@ contract PoolContract {
 
     // Price returns the pool price.
     function price() public view returns (uint256) {
-        return pool.Rx.ToDec().Quo(pool.Ry.ToDec());
+        require(pool.Rx > 0 && pool.Ry > 0, "pool is empty");
+        return pool.Rx.div(pool.Ry);
     }
 
     // K returns the pool k.
@@ -47,9 +48,9 @@ contract PoolContract {
     // Deposit returns accepted x and y coin amount and minted pool coin amount
     // when someone deposits x and y coins.
 
-    function deposit(uint256 x, uint256 y) public returns (uint256) {
-        uint256 ax;
-        uint256 ay;
+    function deposit(uint256 ax, uint256 ay) public returns (uint256) {
+        require(ax > 0 && ay > 0, "invalid deposit amount");
+
         uint256 pc;
         /**  
          Calculate accepted amount and minting amount.
@@ -59,6 +60,9 @@ contract PoolContract {
          TODO: implement calculating logic for ax, ay, pc =================
          ..
          */
+        // 여기도 아까랑 비슷한 논리로 하면
+        // A에 돈을 넣으면 A가 많아저서 평가절하 되니까
+        // B가지고 있으면 상대적으로 돈이 많아지는거지
 
         // ==================================================================
         // 	// update pool states
@@ -89,11 +93,13 @@ contract PoolContract {
         require(pool.Rx > xDelta, "xDelta must be less than Rx");
         // 	// TODO: implement x to y swap logic  ===============================
         // 	// ..
-        uint256 yDelta = price().div(xDelta);
+        uint256 oldPrice = price();
+        uint256 yDelta = oldPrice.div(xDelta);
+        uint256 fee = (pool.Rx + xDelta).div(pool.Ry - yDelta).sub(oldPrice);
 
         // 	// ==================================================================
         // 	// update pool states
-        pool.Rx = pool.Rx.add(xDelta);
+        pool.Rx = pool.Rx.add(xDelta).add(xDelta.mul(fee));
         pool.Ry = pool.Ry.sub(yDelta);
         return yDelta;
     }
@@ -103,12 +109,15 @@ contract PoolContract {
         require(pool.Ry > yDelta, "yDelta must be less than Ry");
         // TODO: implement y to x swap logic  ===============================
         // ..
+        uint256 oldPrice = price();
         uint256 xDelta = price().mul(yDelta);
+        uint256 fee = (pool.Rx - xDelta).div(pool.Ry + yDelta).sub(oldPrice);
+        // uint256 fee = (pool.Rx - xDelta).div(pool.Ry + yDelta).sub(oldPrice);
         // ==================================================================
 
         // update pool states
         pool.Rx = pool.Rx.sub(xDelta);
-        pool.Ry = pool.Ry.add(yDelta);
+        pool.Ry = pool.Ry.add(yDelta).add(yDelta.mul(fee));
         return xDelta;
     }
 }
