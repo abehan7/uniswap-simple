@@ -51,7 +51,6 @@ contract PoolContract {
     function deposit(uint256 ax, uint256 ay) public returns (uint256) {
         require(ax > 0 && ay > 0, "invalid deposit amount");
 
-        uint256 pc;
         /**  
          Calculate accepted amount and minting amount.
          Note that we take as many coins as possible(by ceiling numbers)
@@ -63,6 +62,8 @@ contract PoolContract {
         // 여기도 아까랑 비슷한 논리로 하면
         // A에 돈을 넣으면 A가 많아저서 평가절하 되니까
         // B가지고 있으면 상대적으로 돈이 많아지는거지
+
+        uint256 pc = pool.Ps.mul((ay.div(ax)) + 1);
 
         // ==================================================================
         // 	// update pool states
@@ -93,13 +94,12 @@ contract PoolContract {
         require(pool.Rx > xDelta, "xDelta must be less than Rx");
         // 	// TODO: implement x to y swap logic  ===============================
         // 	// ..
-        uint256 oldPrice = price();
-        uint256 yDelta = oldPrice.div(xDelta);
-        uint256 fee = (pool.Rx + xDelta).div(pool.Ry - yDelta).sub(oldPrice);
+        uint256 _k = k();
+        uint256 yDelta = _k.div(pool.Rx.sub(xDelta)) - pool.Ry;
 
         // 	// ==================================================================
         // 	// update pool states
-        pool.Rx = pool.Rx.add(xDelta).add(xDelta.mul(fee));
+        pool.Rx = pool.Rx.add(xDelta);
         pool.Ry = pool.Ry.sub(yDelta);
         return yDelta;
     }
@@ -109,15 +109,14 @@ contract PoolContract {
         require(pool.Ry > yDelta, "yDelta must be less than Ry");
         // TODO: implement y to x swap logic  ===============================
         // ..
-        uint256 oldPrice = price();
-        uint256 xDelta = price().mul(yDelta);
-        uint256 fee = (pool.Rx - xDelta).div(pool.Ry + yDelta).sub(oldPrice);
+        uint256 _k = k();
+        uint256 xDelta = _k.div(pool.Ry.sub(yDelta)) - pool.Rx;
         // uint256 fee = (pool.Rx - xDelta).div(pool.Ry + yDelta).sub(oldPrice);
         // ==================================================================
 
         // update pool states
         pool.Rx = pool.Rx.sub(xDelta);
-        pool.Ry = pool.Ry.add(yDelta).add(yDelta.mul(fee));
+        pool.Ry = pool.Ry.add(yDelta);
         return xDelta;
     }
 }
