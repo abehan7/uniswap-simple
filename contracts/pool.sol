@@ -83,44 +83,65 @@ contract PoolContract {
         uint256 ay;
 
         uint256 XdivY = pool.Rx.div(pool.Ry);
-        // bool isDecimalCase = XdivY * 10 != (pool.Rx.mul(10)).div(pool.Ry);
-        // console.log("caseA:", XdivY * 10);
-        // console.log("caseB:", (pool.Rx.mul(10)).div(pool.Ry));
+        bool isDecimalCase = XdivY * 10 != (pool.Rx.mul(10)).div(pool.Ry);
+        // working well
 
-        // if (!isDecimalCase) {
-        //     XdivY = pool.Rx.div(pool.Ry);
-        // } else {
-        //     // TODO:
-        //     XdivY = 0;
-        // }
-        // console.log("XdivY: ", XdivY);
+        if (isDecimalCase) {
+            //  XdivY = pool.Rx.div(pool.Ry);
+            XdivY = (pool.Rx.ToDec()).div(pool.Ry);
+            console.log("XdivY", XdivY);
+            console.log("x", x.ToDec());
+        }
 
-        ax = y.mul(XdivY);
+        uint256 requiredXamount = y.mul(XdivY);
 
-        // ay = y;
-        if (ax <= x) {
+        if (!isDecimalCase && requiredXamount <= x) {
             // when x supply is more than y supply
-            // ax = y.mul(XdivY);
+            ax = requiredXamount;
             ay = y;
-        } else {
+        } else if (!isDecimalCase && requiredXamount > x) {
             // when y supply is more than x supply
             ax = x;
             ay = x.div(XdivY);
+        } else if (isDecimalCase && requiredXamount <= x.ToDec()) {
+            // when it's decimal case and x supply is more than y supply
+            ax = requiredXamount;
+            ay = y.ToDec();
+
+            // console.log("ay:", ay);
+        } else if (isDecimalCase && requiredXamount > x.ToDec()) {
+            // when it's decimal case and y supply is more than x supply
+            ax = x.ToDec();
+            ay = x.ToDec().div(XdivY);
         }
+        pc = (ax.mul(pool.Ps)).div(pool.Rx);
         // console.log("ax: ", ax);
         // console.log("ay: ", ay);
-
-        pc = (ax.mul(pool.Ps)).div(pool.Rx);
         // console.log("pc: ", pc);
 
         // uint256 pc = (pool.Rx.add(x)).mul(pool.Ry.add(y)) - _k;
         // ==================================================================
         // 	// update pool states
-        pool.Rx = pool.Rx.add(ax);
-        pool.Ry = pool.Ry.add(ay);
-        pool.Ps = pool.Ps.add(pc);
+        if (!isDecimalCase) {
+            pool.Rx = pool.Rx.add(ax);
+            pool.Ry = pool.Ry.add(ay);
+            pool.Ps = pool.Ps.add(pc);
+            return (ax, ay, pc);
+        } else {
+            uint256 ax2 = ax.delDec();
+            uint256 ay2 = ay.delDec();
+            uint256 pc2 = pc.delDec();
+            // console.log("ax2: ", ax2);
+            // console.log("ay2: ", ay2);
+            // console.log("ay: ", ay);
+            // console.log("pc2: ", pc2);
+            pool.Rx = pool.Rx.add(ax2);
+            pool.Ry = pool.Ry.add(ay2);
+            pool.Ps = pool.Ps.add(pc2);
+            return (ax2, ay2, pc2);
+        }
         // 	return
-        return (ax, ay, pc);
+        // return (ax, ay, pc);
     }
 
     function withdraw(uint256 pc) public returns (uint256, uint256) {
@@ -184,6 +205,12 @@ library lib {
     function ToDec(uint256 a) internal pure returns (uint256) {
         unchecked {
             return a * 10**18;
+        }
+    }
+
+    function delDec(uint256 a) internal pure returns (uint256) {
+        unchecked {
+            return a / 10**18;
         }
     }
 

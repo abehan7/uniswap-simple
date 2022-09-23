@@ -213,7 +213,7 @@ describe("Pool", async () => {
         pc: 99, // expected minted pool coin amount
       },
       {
-        // FIXME: error case
+        //  done
         name: "decimal truncation #2",
         rx: 200,
         ry: 300,
@@ -265,8 +265,8 @@ describe("Pool", async () => {
         rx: 10000,
         ry: 10000,
         ps: 999,
-        x: 10, // 제공
-        y: 10, // 제공
+        x: 10,
+        y: 10,
         ax: 0,
         ay: 0,
         pc: 0,
