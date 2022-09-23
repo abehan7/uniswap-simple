@@ -7,6 +7,7 @@ import "hardhat/console.sol";
 contract PoolContract {
     using lib for uint256;
     using SafeMath for uint256;
+    uint256 constant one = 1;
 
     struct Pool {
         // Rx and Ry are the pool's reserve balance of each x/y coin.
@@ -103,7 +104,12 @@ contract PoolContract {
         // 	// TODO: implement x to y swap logic  ===============================
         // 	// ..
         uint256 _k = k();
-        uint256 yDelta = pool.Ry.sub(_k.div(pool.Rx + xDelta));
+        // add decimals
+        uint256 valA = pool.Ry.ToDec();
+        uint256 valB = _k.div(pool.Rx + xDelta).ToDec();
+
+        // delete decimals
+        uint256 yDelta = (valA - valB) / one.ToDec();
 
         // 	// ==================================================================
         // 	// update pool states
@@ -118,8 +124,12 @@ contract PoolContract {
         // TODO: implement y to x swap logic  ===============================
         // ..
         uint256 _k = k();
-        uint256 xDelta = pool.Rx.sub(_k.div(pool.Ry + yDelta));
-        // uint256 fee = (pool.Rx - xDelta).div(pool.Ry + yDelta).sub(oldPrice);
+        // add decimals
+        uint256 valA = pool.Rx.ToDec();
+        uint256 valB = _k.ToDec().div(pool.Ry + yDelta);
+        // uint256 one = 1;
+        // delete decimals
+        uint256 xDelta = (valA - valB) / one.ToDec();
         // ==================================================================
 
         // update pool states

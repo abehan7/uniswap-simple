@@ -3,7 +3,6 @@ import { ethers } from "hardhat";
 import "@nomiclabs/hardhat-ethers";
 import Price from "./schema/price";
 import { PoolContract } from "../typechain-types/Pool.sol";
-const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 // import "@nomicfoundation/hardhat-chai-matchers";
 describe("Pool", async () => {
   let contract: PoolContract;
