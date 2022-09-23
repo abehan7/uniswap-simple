@@ -61,7 +61,14 @@ contract PoolContract {
     // Deposit returns accepted x and y coin amount and minted pool coin amount
     // when someone deposits x and y coins.
 
-    function deposit(uint256 x, uint256 y) public returns (uint256) {
+    function deposit(uint256 x, uint256 y)
+        public
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
         /**  
          Calculate accepted amount and minting amount.
          Note that we take as many coins as possible(by ceiling numbers)
@@ -71,17 +78,49 @@ contract PoolContract {
          ..
          */
         require(x > 0 && y > 0, "invalid deposit amount");
+        uint256 pc;
+        uint256 ax;
+        uint256 ay;
 
-        uint256 _k = k();
-        uint256 pc = (pool.Rx.add(x)).mul(pool.Ry.add(y)) - _k;
+        uint256 XdivY = pool.Rx.div(pool.Ry);
+        // bool isDecimalCase = XdivY * 10 != (pool.Rx.mul(10)).div(pool.Ry);
+        // console.log("caseA:", XdivY * 10);
+        // console.log("caseB:", (pool.Rx.mul(10)).div(pool.Ry));
 
+        // if (!isDecimalCase) {
+        //     XdivY = pool.Rx.div(pool.Ry);
+        // } else {
+        //     // TODO:
+        //     XdivY = 0;
+        // }
+        // console.log("XdivY: ", XdivY);
+
+        ax = y.mul(XdivY);
+
+        // ay = y;
+        if (ax <= x) {
+            // when x supply is more than y supply
+            // ax = y.mul(XdivY);
+            ay = y;
+        } else {
+            // when y supply is more than x supply
+            ax = x;
+            ay = x.div(XdivY);
+        }
+        // console.log("ax: ", ax);
+        // console.log("ay: ", ay);
+
+        pc = (ax.mul(pool.Ps)).div(pool.Rx);
+        // console.log("pc: ", pc);
+
+        // uint256 pc = (pool.Rx.add(x)).mul(pool.Ry.add(y)) - _k;
         // ==================================================================
         // 	// update pool states
-        pool.Rx = pool.Rx.add(x);
-        pool.Ry = pool.Ry.add(y);
+        pool.Rx = pool.Rx.add(ax);
+        pool.Ry = pool.Ry.add(ay);
         pool.Ps = pool.Ps.add(pc);
         // 	return
-        return pc;
+        return (ax, ay, pc);
     }
 
     function withdraw(uint256 pc) public returns (uint256, uint256) {
