@@ -44,21 +44,9 @@ contract PoolContract {
     // Price returns the pool price.
     function price() public view returns (uint256) {
         require(pool.Rx > 0 && pool.Ry > 0, "pool is empty");
-
-        // 19자리에서 반올림 처리하기
-        // uint256 _price = pool.Ry.mul(10**19).div(pool.Rx);
-
-        // uint256 tmp = 150;
-        // console.log("mod", tmp.rounds());
-
-        // console.log("x:", pool.Rx);
-        // console.log("y", pool.Ry);
-        // console.log("price", (pool.Rx.ToDec() * 10).div(pool.Ry).rounds());
         return (pool.Rx.ToDec() * 10).div(pool.Ry).rounds();
     }
 
-    // 200000000000000000000
-    // 0.666666666666666667
     // K returns the pool k.
     function k() public view returns (uint256) {
         return pool.Rx.mul(pool.Ry);
@@ -111,11 +99,11 @@ contract PoolContract {
 
     function XtoY(uint256 xDelta) public returns (uint256) {
         require(xDelta > 0, "xDelta must be positive");
-        require(pool.Rx > xDelta, "xDelta must be less than Rx");
+        require(pool.Rx >= xDelta, "xDelta must be less than Rx");
         // 	// TODO: implement x to y swap logic  ===============================
         // 	// ..
         uint256 _k = k();
-        uint256 yDelta = _k.div(pool.Rx.sub(xDelta)) - pool.Ry;
+        uint256 yDelta = pool.Ry.sub(_k.div(pool.Rx + xDelta));
 
         // 	// ==================================================================
         // 	// update pool states
@@ -126,11 +114,11 @@ contract PoolContract {
 
     function YtoX(uint256 yDelta) public returns (uint256) {
         require(yDelta > 0, "yDelta must be positive");
-        require(pool.Ry > yDelta, "yDelta must be less than Ry");
+        require(pool.Ry >= yDelta, "yDelta must be less than Ry");
         // TODO: implement y to x swap logic  ===============================
         // ..
         uint256 _k = k();
-        uint256 xDelta = _k.div(pool.Ry.sub(yDelta)) - pool.Rx;
+        uint256 xDelta = pool.Rx.sub(_k.div(pool.Ry + yDelta));
         // uint256 fee = (pool.Rx - xDelta).div(pool.Ry + yDelta).sub(oldPrice);
         // ==================================================================
 
