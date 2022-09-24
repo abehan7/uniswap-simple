@@ -93,6 +93,7 @@ describe("Pool", async () => {
         y: 10, // withdrawn coin amount
       },
       {
+        // FIXME: error case
         name: "ideal withdraw - with fee",
         rx: 2000,
         ry: 100,
@@ -103,6 +104,7 @@ describe("Pool", async () => {
         y: 9,
       },
       {
+        // FIXME: error case
         name: "withdraw all",
         rx: 123,
         ry: 567,
@@ -138,7 +140,7 @@ describe("Pool", async () => {
         await contract.createPool(params[i].rx, params[i].ry, params[i].ps);
         const [_x, _y] = await contract.callStatic.withdraw(
           params[i].pc,
-          params[i].feeRate //여기 decimal처리해야할듯
+          params[i].feeRate * 10 ** 18 //여기 decimal처리해야할듯
         );
         const [x, y] = [_x, _y].map((token) => token.toString());
         // console.log(`x:${x} expected x:${params[i].x}`);

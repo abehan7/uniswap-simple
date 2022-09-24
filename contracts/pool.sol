@@ -157,10 +157,21 @@ contract PoolContract {
         // 일단 feeRate 이거는 무시하고 차후적으로 추가하기
         uint256 x;
         uint256 y;
-
+        uint256 _pc = pc;
         uint256 _price = price(); // decimal 곱해져있는 상태 // price  * (10**18)
-        x = (pool.Rx.mul(pc)).div(pool.Ps);
+
+        if (feeRate != 0) {
+            _pc = pc.mul(one.ToDec() - feeRate);
+            x = (pool.Rx.mul(_pc)).div(pool.Ps).delDec();
+        } else {
+            x = (pool.Rx.mul(pc)).div(pool.Ps);
+        }
         y = x.ToDec() / _price;
+
+        // x = (pool.Rx.mul(pc)).div(pool.Ps);
+        // if (feeRate != 0) {
+        // x = (pool.Rx.mul(_pc)).div(pool.Ps).delDec();
+        // }
 
         // 	// ==================================================================
         // 	// update pool states
