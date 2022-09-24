@@ -91,6 +91,15 @@ contract PoolContract {
         uint256 ay = ax.ToDec().div(_price);
         uint256 pc = (ax.mul(pool.Ps)).div(pool.Rx);
 
+        if (pc == 0) {
+            return (0, 0, 0);
+        }
+
+        // if (ay > y) {
+        //     ay = y;
+        //     ax = _price.mul(y).delDec();
+        // }
+
         // ==================================================================
         // 	// update pool states
         pool.Rx = pool.Rx.add(ax);
