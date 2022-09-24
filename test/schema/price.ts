@@ -1,4 +1,4 @@
-class Price {
+export class Price {
   private price: string;
   private decimal: number;
 
@@ -28,5 +28,3 @@ class Price {
     return this.decimal;
   }
 }
-
-export default Price;

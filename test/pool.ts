@@ -1,8 +1,8 @@
 import { expect, assert } from "chai";
 import { ethers } from "hardhat";
 import "@nomiclabs/hardhat-ethers";
-import Price from "./schema/price";
 import { PoolContract } from "../typechain-types";
+import { Price } from "./schema";
 import {
   testIsDepletedParams,
   testPoolPriceParams_1,
@@ -11,6 +11,7 @@ import {
   testXtoYParams,
   testYtoXParams,
 } from "./data";
+import { BigNumber } from "ethers";
 // import "@nomicfoundation/hardhat-chai-matchers";
 describe("Pool", async () => {
   let contract: PoolContract;
@@ -83,20 +84,25 @@ describe("Pool", async () => {
 
   describe("TestWithdraw", async () => {
     const params = testWithdrawPrams;
+
     for (let i = 0; i < params.length; i++) {
+      const tc = params[i];
       it(`(${params[i].name}) Should return the correct amount of x, y`, async () => {
         await contract.createPool(params[i].rx, params[i].ry, params[i].ps);
         const [_x, _y] = await contract.callStatic.withdraw(
           params[i].pc,
           params[i].feeRate * 10 ** 18 //여기 decimal처리해야할듯
         );
+
         const [x, y] = [_x, _y].map((token) => token.toString());
         expect(x).to.equal(params[i].x.toString());
         expect(y).to.equal(params[i].y.toString());
 
         // Additional assertions 여기는 차후적으로 추가하기
         // require.True(t, tc.pc * tc.rx >= x.Int64() * tc.ps);
-        // require.True(t, tc.pc * tc.ry >= y.Int64() * tc.ps);
+        assert(tc.pc * tc.rx >= Number(x) * tc.ps, "");
+        // require.True(t, tc.pc * tc.ry >= y * tc.ps);
+        assert(tc.pc * tc.ry >= Number(y) * tc.ps, "");
       });
     }
   });
@@ -120,6 +126,7 @@ describe("Pool", async () => {
         pc: 1000, // expected minted pool coin amount
       },
       {
+        // FIXME: 지금은 X기준으로 해서 되는데 바뀌면 안되니까 나중에 수정하기
         name: "unbalanced deposit",
         rx: 2000, // reserve balance
         ry: 100, // reserve balance
@@ -151,7 +158,7 @@ describe("Pool", async () => {
         pc: 99, // expected minted pool coin amount
       },
       {
-        //  done
+        // FIXME: error case
         name: "decimal truncation #2",
         rx: 200,
         ry: 300,
@@ -213,10 +220,10 @@ describe("Pool", async () => {
     for (let i = 0; i < params.length; i++) {
       it(`(${params[i].name}) Should return the correct amount of pool coins`, async () => {
         await contract.createPool(params[i].rx, params[i].ry, params[i].ps);
-        const [_ax, _ay, _pc] = (await contract.callStatic.deposit(
+        const [_ax, _ay, _pc] = await contract.callStatic.deposit(
           params[i].x,
           params[i].y
-        )) as any;
+        );
 
         const [ax, ay, pc] = [_ax, _ay, _pc].map((x) => x.toString());
         // console.log(ax, ay, pc);
