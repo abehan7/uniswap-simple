@@ -89,8 +89,8 @@ contract PoolContract {
         if (isDecimalCase) {
             //  XdivY = pool.Rx.div(pool.Ry);
             XdivY = (pool.Rx.ToDec()).div(pool.Ry);
-            console.log("XdivY", XdivY);
-            console.log("x", x.ToDec());
+            // console.log("XdivY", XdivY);
+            // console.log("x", x.ToDec());
         }
 
         uint256 requiredXamount = y.mul(XdivY);
@@ -144,17 +144,28 @@ contract PoolContract {
         // return (ax, ay, pc);
     }
 
-    function withdraw(uint256 pc) public returns (uint256, uint256) {
+    function withdraw(uint256 pc, uint256 feeRate)
+        public
+        returns (uint256, uint256)
+    {
         // 	// TODO: implement calculating logic for x, y =======================
         // 	// ..
+        // 일단 feeRate 이거는 무시하고 차후적으로 추가하기
+        uint256 x;
+        uint256 y;
+        uint256 _price = price(); // decimal 곱해져있는 상태 // price  * (10**18)
+        uint256 willBeBurnPoolCoinRatio = (pc.ToDec()).div(pool.Ps); //decimal 곱해져있는 상태 * (10**18)
+        x = pool.Rx.ToDec() / willBeBurnPoolCoinRatio;
+        y = x.ToDec() / _price;
 
-        uint256 x = pool.Rx.mul(pc) / pool.Ps;
-        uint256 y = pool.Ry.mul(pc) / pool.Ps;
         // 	// ==================================================================
         // 	// update pool states
         pool.Rx = pool.Rx.sub(x);
         pool.Ry = pool.Ry.sub(y);
         pool.Ps = pool.Ps.sub(pc);
+        console.log("x", x);
+        console.log("y", y);
+        console.log("pc", pc);
         return (x, y);
     }
 
