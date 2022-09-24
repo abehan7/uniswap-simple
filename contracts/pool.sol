@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "hardhat/console.sol";
 
 // Rx, Ry sdk.Int
 contract PoolContract {
     using lib for uint256;
+    using lib for string;
+
     using SafeMath for uint256;
+    using Strings for uint256;
     uint256 constant one = 1;
 
     struct Pool {
@@ -153,9 +157,9 @@ contract PoolContract {
         // 일단 feeRate 이거는 무시하고 차후적으로 추가하기
         uint256 x;
         uint256 y;
+
         uint256 _price = price(); // decimal 곱해져있는 상태 // price  * (10**18)
-        uint256 willBeBurnPoolCoinRatio = (pc.ToDec()).div(pool.Ps); //decimal 곱해져있는 상태 * (10**18)
-        x = pool.Rx.ToDec() / willBeBurnPoolCoinRatio;
+        x = (pool.Rx.mul(pc)).div(pool.Ps);
         y = x.ToDec() / _price;
 
         // 	// ==================================================================
@@ -163,9 +167,9 @@ contract PoolContract {
         pool.Rx = pool.Rx.sub(x);
         pool.Ry = pool.Ry.sub(y);
         pool.Ps = pool.Ps.sub(pc);
-        console.log("x", x);
-        console.log("y", y);
-        console.log("pc", pc);
+        // console.log("x", x);
+        // console.log("y", y);
+        // console.log("pc", pc);
         return (x, y);
     }
 
@@ -249,5 +253,9 @@ library lib {
                 return (a / 10);
             }
         }
+    }
+
+    function toLength(string memory a) internal pure returns (uint256) {
+        return bytes(a).length - 1;
     }
 }
