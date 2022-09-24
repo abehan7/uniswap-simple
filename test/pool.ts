@@ -126,7 +126,7 @@ describe("Pool", async () => {
         pc: 1000, // expected minted pool coin amount
       },
       {
-        // FIXME: 지금은 X기준으로 해서 되는데 바뀌면 안되니까 나중에 수정하기
+        // TODO: 지금은 X기준으로 해서 되는데 바뀌면 안되니까 나중에 수정하기
         name: "unbalanced deposit",
         rx: 2000, // reserve balance
         ry: 100, // reserve balance
@@ -142,7 +142,6 @@ describe("Pool", async () => {
         pc: 500, // expected minted pool coin amount
       },
       {
-        // FIXME: error case
         name: "decimal truncation",
         rx: 222, // reserve balance
         ry: 333, // reserve balance
@@ -170,7 +169,6 @@ describe("Pool", async () => {
         pc: 88,
       },
       {
-        // FIXME: error case
         name: "zero minting amount",
         ps: 100,
         rx: 10000,
@@ -205,7 +203,6 @@ describe("Pool", async () => {
         pc: 1,
       },
       {
-        // FIXME: error case
         name: "zero minting amount",
         rx: 10000,
         ry: 10000,

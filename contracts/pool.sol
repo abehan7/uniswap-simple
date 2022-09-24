@@ -91,14 +91,30 @@ contract PoolContract {
         uint256 ay = ax.ToDec().div(_price);
         uint256 pc = (ax.mul(pool.Ps)).div(pool.Rx);
 
-        if (pc == 0) {
-            return (0, 0, 0);
+        // when pool coin mint decimal, revert the tx
+        if (pc == 0) return (0, 0, 0);
+        // decimal truncation case 1 handler
+        if (ay > y) {
+            ay = y;
+            while (true) {
+                // FIXME: 여기 로직을 잘못만들었어
+                // ax1쪽이 분수가 나올수 밖에 없는 구조였던거지
+                uint256 _ax1 = ((pool.Rx * ay).ToDec()).div(pool.Ry);
+                uint256 _ax2 = ((pool.Rx * ay).div(pool.Ry)).ToDec();
+                // console.log("_ax1", _ax1);
+                // console.log("_ax2", _ax2);
+                if (_ax1 != _ax2) {
+                    ay = ay.sub(one);
+                } else {
+                    ax = (pool.Rx.mul(ay)).div(pool.Ry);
+                    pc = (ax.mul(pool.Ps)).div(pool.Rx);
+                    console.log("ax", ax);
+                    console.log("ay", ay);
+                    break;
+                }
+            }
         }
-
-        // if (ay > y) {
-        //     ay = y;
-        //     ax = _price.mul(y).delDec();
-        // }
+        // decimal truncation case 2 handler
 
         // ==================================================================
         // 	// update pool states
