@@ -98,3 +98,56 @@ export const testYtoXParams = [
     outputX: 149,
   },
 ];
+
+export const testWithdrawPrams = [
+  {
+    name: "ideal withdraw",
+    rx: 2000, // reserve balance
+    ry: 100, // reserve balance
+    ps: 10000, // pool coin supply
+    pc: 1000, // redeeming pool coin amount
+    feeRate: 0, //수수료
+    x: 200, // withdrawn coin amount
+    y: 10, // withdrawn coin amount
+  },
+  {
+    name: "ideal withdraw - with fee",
+    rx: 2000,
+    ry: 100,
+    ps: 10000,
+    pc: 1000,
+    feeRate: 0.003, // 수수료
+    x: 199,
+    y: 9,
+  },
+  {
+    name: "withdraw all",
+    rx: 123,
+    ry: 567,
+    ps: 10,
+    pc: 10,
+    feeRate: 0.003,
+    x: 123,
+    y: 567,
+  },
+  {
+    name: "advantageous for pool",
+    rx: 100,
+    ry: 100,
+    ps: 10000,
+    pc: 99,
+    feeRate: 0,
+    x: 0,
+    y: 0,
+  },
+  {
+    name: "advantageous for pool",
+    rx: 10000,
+    ry: 100,
+    ps: 10000,
+    pc: 99,
+    feeRate: 0,
+    x: 99,
+    y: 0,
+  },
+];

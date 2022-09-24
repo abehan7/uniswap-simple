@@ -7,6 +7,7 @@ import {
   testIsDepletedParams,
   testPoolPriceParams_1,
   testPoolPriceParams_2,
+  testWithdrawPrams,
   testXtoYParams,
   testYtoXParams,
 } from "./data";
@@ -81,60 +82,7 @@ describe("Pool", async () => {
   });
 
   describe("TestWithdraw", async () => {
-    const params = [
-      {
-        name: "ideal withdraw",
-        rx: 2000, // reserve balance
-        ry: 100, // reserve balance
-        ps: 10000, // pool coin supply
-        pc: 1000, // redeeming pool coin amount
-        feeRate: 0, //수수료
-        x: 200, // withdrawn coin amount
-        y: 10, // withdrawn coin amount
-      },
-      {
-        // error case >> done
-        name: "ideal withdraw - with fee",
-        rx: 2000,
-        ry: 100,
-        ps: 10000,
-        pc: 1000,
-        feeRate: 0.003, // 수수료
-        x: 199,
-        y: 9,
-      },
-      {
-        // FIXME: error case
-        name: "withdraw all",
-        rx: 123,
-        ry: 567,
-        ps: 10,
-        pc: 10,
-        feeRate: 0.003,
-        x: 123,
-        y: 567,
-      },
-      {
-        name: "advantageous for pool",
-        rx: 100,
-        ry: 100,
-        ps: 10000,
-        pc: 99,
-        feeRate: 0,
-        x: 0,
-        y: 0,
-      },
-      {
-        name: "advantageous for pool",
-        rx: 10000,
-        ry: 100,
-        ps: 10000,
-        pc: 99,
-        feeRate: 0,
-        x: 99,
-        y: 0,
-      },
-    ];
+    const params = testWithdrawPrams;
     for (let i = 0; i < params.length; i++) {
       it(`(${params[i].name}) Should return the correct amount of x, y`, async () => {
         await contract.createPool(params[i].rx, params[i].ry, params[i].ps);
@@ -143,8 +91,6 @@ describe("Pool", async () => {
           params[i].feeRate * 10 ** 18 //여기 decimal처리해야할듯
         );
         const [x, y] = [_x, _y].map((token) => token.toString());
-        // console.log(`x:${x} expected x:${params[i].x}`);
-        // console.log(`y:${y} expected y:${params[i].y}`);
         expect(x).to.equal(params[i].x.toString());
         expect(y).to.equal(params[i].y.toString());
 
@@ -154,7 +100,7 @@ describe("Pool", async () => {
       });
     }
   });
-  assert(false, "stop for now to check withdraw");
+  // assert(false, "stop for now to check withdraw");
 
   describe("TestDeposit", async () => {
     const params = [

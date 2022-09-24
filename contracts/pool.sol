@@ -135,7 +135,6 @@ contract PoolContract {
             uint256 ax2 = ax.delDec();
             uint256 ay2 = ay.delDec();
             uint256 pc2 = pc.delDec();
-            // console.log("ax2: ", ax2);
             // console.log("ay2: ", ay2);
             // console.log("ay: ", ay);
             // console.log("pc2: ", pc2);
@@ -144,8 +143,6 @@ contract PoolContract {
             pool.Ps = pool.Ps.add(pc2);
             return (ax2, ay2, pc2);
         }
-        // 	return
-        // return (ax, ay, pc);
     }
 
     function withdraw(uint256 pc, uint256 feeRate)
@@ -154,7 +151,6 @@ contract PoolContract {
     {
         // 	// TODO: implement calculating logic for x, y =======================
         // 	// ..
-        // 일단 feeRate 이거는 무시하고 차후적으로 추가하기
         uint256 x;
         uint256 y;
         uint256 _pc = pc;
@@ -171,19 +167,11 @@ contract PoolContract {
         }
         y = x.ToDec() / _price;
 
-        // x = (pool.Rx.mul(pc)).div(pool.Ps);
-        // if (feeRate != 0) {
-        // x = (pool.Rx.mul(_pc)).div(pool.Ps).delDec();
-        // }
-
         // 	// ==================================================================
         // 	// update pool states
         pool.Rx = pool.Rx.sub(x);
         pool.Ry = pool.Ry.sub(y);
         pool.Ps = pool.Ps.sub(pc);
-        // console.log("x", x);
-        // console.log("y", y);
-        // console.log("pc", pc);
         return (x, y);
     }
 
@@ -216,7 +204,6 @@ contract PoolContract {
         // add decimals
         uint256 valA = pool.Rx.ToDec();
         uint256 valB = _k.ToDec().div(pool.Ry + yDelta);
-        // uint256 one = 1;
         // delete decimals
         uint256 xDelta = (valA - valB) / one.ToDec();
         // ==================================================================
@@ -240,22 +227,6 @@ library lib {
     function delDec(uint256 a) internal pure returns (uint256) {
         unchecked {
             return a / 10**18;
-        }
-    }
-
-    function Quo(uint256 a, uint256 b) internal pure returns (uint256) {
-        unchecked {
-            if (b == 0) return 0;
-            return a / b;
-        }
-    }
-
-    function sqrt(uint256 x) internal pure returns (uint256 y) {
-        uint256 z = (x + 1) / 2;
-        y = x;
-        while (z < y) {
-            y = z;
-            z = (x / z + z) / 2;
         }
     }
 
