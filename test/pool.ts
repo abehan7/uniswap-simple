@@ -93,7 +93,7 @@ describe("Pool", async () => {
         y: 10, // withdrawn coin amount
       },
       {
-        // FIXME: error case
+        // error case >> done
         name: "ideal withdraw - with fee",
         rx: 2000,
         ry: 100,

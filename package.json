@@ -16,5 +16,9 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.3"
+  },
+  "scripts": {
+    "t": "npx hardhat test test",
+    "c": "npx hardhat compile"
   }
 }

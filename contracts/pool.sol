@@ -160,7 +160,10 @@ contract PoolContract {
         uint256 _pc = pc;
         uint256 _price = price(); // decimal 곱해져있는 상태 // price  * (10**18)
 
-        if (feeRate != 0) {
+        uint256 holdingPoolCoinPercent = pc.ToDec() / pool.Ps;
+        bool isWithdrawAll = holdingPoolCoinPercent == one.ToDec();
+
+        if (feeRate != 0 && !isWithdrawAll) {
             _pc = pc.mul(one.ToDec() - feeRate);
             x = (pool.Rx.mul(_pc)).div(pool.Ps).delDec();
         } else {
