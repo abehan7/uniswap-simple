@@ -27,18 +27,16 @@ class Deposit {
         // 아~ normal case같은 경우에는 1을 줄여버리니까 바로 코인 1개가 사라져버리네
         let ax, pc;
         // 여기부터 반복
-        // while (true) {
-        const [ax1, pc1] = this.getAxAy(ay);
-        const [ax2, pc2] = this.getAxAy(ay - 1);
-        ax = ax1;
-        pc = pc1;
-        if (this.cutDec(pc1) === this.cutDec(pc2)) {
-            pc = this.cutDec(pc1);
-            const poolCoinRatio = pc / this.tc.ps;
-            ax = poolCoinRatio * this.tc.rx;
-            ay = (this.tc.ry / this.tc.rx) * ax;
+        while (true) {
+            const [ax1, pc1] = this.getAxAy(ay);
+            const [ax2, pc2] = this.getAxAy(ay - 1);
+            ax = ax1;
+            pc = pc1;
+            if (this.cutDec(pc1) > this.cutDec(pc2))
+                break;
+            pc = pc2;
+            ay--;
         }
-        // }
         console.log(`${this.tc.name} >> ax: ${parseInt(ax.toString())} ay: ${parseInt(ay.toString())} pc: ${parseInt(pc.toString())} `);
         console.log(`expected values >> ax : ${this.tc.ax} ay:${this.tc.ay} pc:${this.tc.pc}`);
         const isPassable = this.cutDec(ax) === this.tc.ax &&

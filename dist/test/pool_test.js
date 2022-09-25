@@ -96,98 +96,7 @@ describe("Pool", () => __awaiter(void 0, void 0, void 0, function* () {
     }));
     // assert(false, "stop for now to check withdraw");
     describe("TestDeposit", () => __awaiter(void 0, void 0, void 0, function* () {
-        const params = [
-            {
-                name: "ideal deposit",
-                rx: 2000,
-                ry: 100,
-                ps: 10000,
-                x: 200,
-                y: 10,
-                ax: 200,
-                ay: 10,
-                pc: 1000, // expected minted pool coin amount
-            },
-            {
-                name: "unbalanced deposit",
-                rx: 2000,
-                ry: 100,
-                ps: 10000,
-                x: 100,
-                y: 2000,
-                ax: 100,
-                ay: 5,
-                pc: 500, // expected minted pool coin amount
-            },
-            {
-                // FIXME: error case
-                name: "decimal truncation",
-                rx: 222,
-                ry: 333,
-                ps: 333,
-                x: 100,
-                y: 100,
-                ax: 66,
-                ay: 99,
-                pc: 99, // expected minted pool coin amount
-            },
-            {
-                name: "decimal truncation #2",
-                rx: 200,
-                ry: 300,
-                ps: 333,
-                x: 80,
-                y: 80,
-                ax: 53,
-                ay: 80,
-                pc: 88,
-            },
-            {
-                name: "zero minting amount",
-                ps: 100,
-                rx: 10000,
-                ry: 10000,
-                x: 99,
-                y: 99,
-                ax: 0,
-                ay: 0,
-                pc: 0,
-            },
-            {
-                name: "tiny minting amount",
-                rx: 10000,
-                ry: 10000,
-                ps: 100,
-                x: 100,
-                y: 100,
-                ax: 100,
-                ay: 100,
-                pc: 1,
-            },
-            {
-                // FIXME: error case
-                name: "tiny minting amount #2",
-                rx: 10000,
-                ry: 10000,
-                ps: 100,
-                x: 199,
-                y: 199,
-                ax: 100,
-                ay: 100,
-                pc: 1,
-            },
-            {
-                name: "zero minting amount",
-                rx: 10000,
-                ry: 10000,
-                ps: 999,
-                x: 10,
-                y: 10,
-                ax: 0,
-                ay: 0,
-                pc: 0,
-            },
-        ];
+        const params = data_1.testDepositParams;
         for (let i = 0; i < params.length; i++) {
             it(`(${params[i].name}) Should return the correct amount of pool coins and accepted x,y`, () => __awaiter(void 0, void 0, void 0, function* () {
                 yield contract.createPool(params[i].rx, params[i].ry, params[i].ps);
@@ -197,6 +106,16 @@ describe("Pool", () => __awaiter(void 0, void 0, void 0, function* () {
                 (0, chai_1.expect)(ax).to.equal(params[i].ax.toString());
                 (0, chai_1.expect)(ay).to.equal(params[i].ay.toString());
                 (0, chai_1.expect)(pc).to.equal(params[i].pc.toString());
+                const isDepleted = yield contract.callStatic.isDepleted();
+                const tc = params[i];
+                if (!isDepleted) {
+                    (0, chai_1.expect)(Number(ax) * Number(tc.ps) >= Number(pc) * Number(tc.rx));
+                    // (ax / Rx) > (pc / Ps)
+                    (0, chai_1.expect)(Number(ax) / tc.rx > Number(pc) / Number(tc.ps));
+                    (0, chai_1.expect)(Number(ay) * Number(tc.ps) >= Number(pc) * Number(tc.ry));
+                    // (ay / Ry) > (pc / Ps)
+                    (0, chai_1.expect)(Number(ay) / tc.ry > Number(pc) / Number(tc.ps));
+                }
                 // Additional assertions
                 // if !pool.IsDepleted() {
                 // 	require.True(t, (ax.Int64()*tc.ps) >= (pc.Int64()*tc.rx)) // (ax / Rx) > (pc / Ps)
