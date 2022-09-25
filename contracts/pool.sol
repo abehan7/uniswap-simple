@@ -7,7 +7,6 @@ import "hardhat/console.sol";
 // Rx, Ry sdk.Int
 contract PoolContract {
     using lib for uint256;
-    using lib for string;
 
     using SafeMath for uint256;
     using Strings for uint256;
@@ -93,7 +92,7 @@ contract PoolContract {
          */
         require(x > 0 && y > 0, "invalid deposit amount");
 
-        uint256 _price = price(); // decimal 나중에 없애기
+        uint256 _price = price(); // added decimal // price  * (10**18)
         uint256 ax = x;
         uint256 ay = ax.ToDec().div(_price);
         uint256 pc = (ax.mul(pool.Ps)).div(pool.Rx);
@@ -101,9 +100,9 @@ contract PoolContract {
         // when pool coin mint decimal, revert the tx
         if (pc == 0) return (0, 0, 0);
 
+        // tiny minting amount error handler
         bool priceIsOne = pool.Rx.div(pool.Ry) == 1 && pool.Rx % pool.Ry == 0;
-        // decimal truncation case 2 handler
-        // FIXME: 여기 로직을 잘못만들었어
+        // decimal truncation case 2 error handler
         if (ay > y || priceIsOne) {
             ay = y;
 
@@ -136,7 +135,7 @@ contract PoolContract {
         uint256 x;
         uint256 y;
         uint256 _pc = pc;
-        uint256 _price = price(); // decimal 곱해져있는 상태 // price  * (10**18)
+        uint256 _price = price(); //added decimal // price  * (10**18)
 
         uint256 holdingPoolCoinPercent = pc.ToDec() / pool.Ps;
         bool isWithdrawAll = holdingPoolCoinPercent == one.ToDec();
@@ -220,9 +219,5 @@ library lib {
                 return (a / 10);
             }
         }
-    }
-
-    function toLength(string memory a) internal pure returns (uint256) {
-        return bytes(a).length - 1;
     }
 }
