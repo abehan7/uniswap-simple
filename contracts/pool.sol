@@ -106,15 +106,15 @@ contract PoolContract {
         if (ay > y || priceIsOne) {
             ay = y;
 
-            while (true) {
-                (uint256 ax1, uint256 pc1) = getAxAyInDeposit(ay);
-                (uint256 __, uint256 pc2) = getAxAyInDeposit(ay - 1);
+            (uint256 ax1, uint256 pc1) = getAxAyInDeposit(ay);
+            (uint256 __, uint256 pc2) = getAxAyInDeposit(ay - 1);
 
-                ax = ax1;
-                pc = pc1;
-                if (pc1 > pc2) break;
+            ax = ax1;
+            pc = pc1;
+            if (pc1 == pc2) {
                 pc = pc2;
-                ay--;
+                ax = (pc.mul(pool.Rx)).div(pool.Ps);
+                ay = (pool.Ry.mul(ax)).div(pool.Rx);
             }
         }
 
