@@ -7,3 +7,15 @@
 // };
 // const k = test2.rx * test2.ry;
 // const deltaX = -k / (test2.ry + test2.inputY) + test2.rx;
+
+import { testDepositParams } from "./data";
+
+const errorCase1 = testDepositParams.find(
+  (param) => param.name === "decimal truncation"
+);
+
+const errorCase2 = testDepositParams.find(
+  (param) => param.name === "tiny minting amount #2"
+);
+
+console.log(errorCase1);

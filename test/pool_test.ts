@@ -1,6 +1,7 @@
 import { expect, assert } from "chai";
 import { ethers } from "hardhat";
 import "@nomiclabs/hardhat-ethers";
+// import { PoolContract } from "../typechain-types";
 import { PoolContract } from "../typechain-types";
 import { Price } from "./schema";
 import {
@@ -11,14 +12,13 @@ import {
   testXtoYParams,
   testYtoXParams,
 } from "./data";
-import { BigNumber } from "ethers";
 // import "@nomicfoundation/hardhat-chai-matchers";
 describe("Pool", async () => {
   let contract: PoolContract;
 
   beforeEach(async () => {
     const Pool = await ethers.getContractFactory("PoolContract");
-    contract = await Pool.deploy();
+    contract = (await Pool.deploy()) as PoolContract;
   });
 
   describe("TestPoolPrice", async () => {
@@ -141,6 +141,7 @@ describe("Pool", async () => {
         pc: 500, // expected minted pool coin amount
       },
       {
+        // FIXME: error case
         name: "decimal truncation",
         rx: 222, // reserve balance
         ry: 333, // reserve balance
@@ -156,7 +157,6 @@ describe("Pool", async () => {
         pc: 99, // expected minted pool coin amount
       },
       {
-        // FIXME: error case
         name: "decimal truncation #2",
         rx: 200,
         ry: 300,

@@ -151,3 +151,108 @@ export const testWithdrawPrams = [
     y: 0,
   },
 ];
+
+export const testDepositParams = [
+  {
+    name: "ideal deposit",
+    rx: 2000, // reserve balance
+    ry: 100, // reserve balance
+
+    ps: 10000, // pool coin supply
+
+    x: 200, // depositing coin amount
+    y: 10, // depositing coin amount
+
+    ax: 200, // expected accepted coin amount
+    ay: 10, // expected accepted coin amount
+
+    pc: 1000, // expected minted pool coin amount
+  },
+  {
+    name: "unbalanced deposit",
+    rx: 2000, // reserve balance
+    ry: 100, // reserve balance
+
+    ps: 10000, // pool coin supply
+
+    x: 100, // depositing coin amount
+    y: 2000, // depositing coin amount
+
+    ax: 100, // expected accepted coin amount
+    ay: 5, // expected accepted coin amount
+
+    pc: 500, // expected minted pool coin amount
+  },
+  {
+    // FIXME: error case
+    name: "decimal truncation",
+    rx: 222, // reserve balance
+    ry: 333, // reserve balance
+
+    ps: 333, // pool coin supply
+
+    x: 100, // depositing coin amount
+    y: 100, // depositing coin amount
+
+    ax: 66, // expected accepted coin amount
+    ay: 99, // expected accepted coin amount
+
+    pc: 99, // expected minted pool coin amount
+  },
+  {
+    name: "decimal truncation #2",
+    rx: 200,
+    ry: 300,
+    ps: 333,
+    x: 80,
+    y: 80,
+    ax: 53,
+    ay: 80,
+    pc: 88,
+  },
+  {
+    name: "zero minting amount",
+    ps: 100,
+    rx: 10000,
+    ry: 10000,
+    x: 99,
+    y: 99,
+    ax: 0,
+    ay: 0,
+    pc: 0,
+  },
+  {
+    name: "tiny minting amount",
+    rx: 10000,
+    ry: 10000,
+    ps: 100,
+    x: 100,
+    y: 100,
+    ax: 100,
+    ay: 100,
+    pc: 1,
+  },
+  {
+    // FIXME: error case
+    name: "tiny minting amount #2",
+    rx: 10000,
+    ry: 10000,
+    ps: 100,
+    x: 199,
+    y: 199,
+    ax: 100,
+    ay: 100,
+    pc: 1,
+  },
+  {
+    name: "zero minting amount",
+    rx: 10000,
+    ry: 10000,
+    ps: 999,
+    x: 10,
+    y: 10,
+    ax: 0,
+    ay: 0,
+    pc: 0,
+  },
+];
