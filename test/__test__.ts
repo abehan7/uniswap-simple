@@ -40,9 +40,7 @@ class Deposit {
   private getAxAy(ay: number) {
     const price = this.tc.rx / this.tc.ry;
     const ax = ay * price;
-    // const ax = (ay * this.tc.rx) / this.tc.ry;
     const pc = (this.tc.ps * ax) / this.tc.rx;
-    // const pc = (this.tc.ps * ax) / this.tc.rx;
     return [ax, pc];
   }
 
@@ -50,14 +48,12 @@ class Deposit {
     return parseInt(number.toString());
   }
 
-  public getDepositResult() {
+  get getDepositResult() {
     console.log(` `);
 
     if (!normalCase) return;
-    //   const tc = normalCase;
     let ay = this.tc.y;
     // 아~ normal case같은 경우에는 1을 줄여버리니까 바로 코인 1개가 사라져버리네
-    const price = this.tc.rx / this.tc.ry;
     let ax: number, pc: number;
 
     // 여기부터 반복
@@ -98,7 +94,7 @@ class Deposit {
 const init = () => {
   params.forEach((param) => {
     const deposit = new Deposit(param!);
-    deposit.getDepositResult();
+    deposit.getDepositResult;
   });
 };
 

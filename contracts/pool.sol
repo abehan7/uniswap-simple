@@ -65,6 +65,16 @@ contract PoolContract {
     // Deposit returns accepted x and y coin amount and minted pool coin amount
     // when someone deposits x and y coins.
 
+    function getAxAyInDeposit(uint256 _ay)
+        internal
+        view
+        returns (uint256, uint256)
+    {
+        uint256 ax = (_ay.mul(pool.Rx)).div(pool.Ry);
+        uint256 pc = (pool.Ps.mul(ax)).div(pool.Rx);
+        return (ax, pc);
+    }
+
     function deposit(uint256 x, uint256 y)
         public
         returns (
@@ -91,25 +101,23 @@ contract PoolContract {
         // when pool coin mint decimal, revert the tx
         if (pc == 0) return (0, 0, 0);
 
-        // bool priceIsOne = pool.Rx.div(pool.Ry) == 1 && pool.Rx % pool.Ry == 0;
+        bool priceIsOne = pool.Rx.div(pool.Ry) == 1 && pool.Rx % pool.Ry == 0;
         // decimal truncation case 2 handler
         // FIXME: 여기 로직을 잘못만들었어
-        if (ay > y) {
+        if (ay > y || priceIsOne) {
             ay = y;
-            // while (true) {
-            //     uint256 _ax1 = ((pool.Rx * ay).mul(10)).div(pool.Ry);
-            //     uint256 _ax2 = ((pool.Rx * ay).div(pool.Ry)).mul(10);
 
-            //     if (_ax1 != _ax2) {
-            //         ay = ay.sub(one);
-            //     } else {
-            ax = (pool.Rx.mul(ay)).div(pool.Ry);
-            pc = (ax.mul(pool.Ps)).div(pool.Rx);
-            // break;
-            // }
-            // }
+            while (true) {
+                (uint256 ax1, uint256 pc1) = getAxAyInDeposit(ay);
+                (uint256 __, uint256 pc2) = getAxAyInDeposit(ay - 1);
+
+                ax = ax1;
+                pc = pc1;
+                if (pc1 > pc2) break;
+                pc = pc2;
+                ay--;
+            }
         }
-        // decimal truncation case 1 handler
 
         // ==================================================================
         // 	// update pool states

@@ -184,7 +184,6 @@ export const testDepositParams = [
     pc: 500, // expected minted pool coin amount
   },
   {
-    // FIXME: error case
     name: "decimal truncation",
     rx: 222, // reserve balance
     ry: 333, // reserve balance
