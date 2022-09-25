@@ -87,16 +87,16 @@ describe("Pool", async () => {
 
     for (let i = 0; i < params.length; i++) {
       const tc = params[i];
-      it(`(${params[i].name}) Should return the correct amount of x, y`, async () => {
-        await contract.createPool(params[i].rx, params[i].ry, params[i].ps);
+      it(`(${tc.name}) Should return the correct amount of x, y`, async () => {
+        await contract.createPool(tc.rx, tc.ry, tc.ps);
         const [_x, _y] = await contract.callStatic.withdraw(
-          params[i].pc,
-          params[i].feeRate * 10 ** 18 //여기 decimal처리해야할듯
+          tc.pc,
+          tc.feeRate * 10 ** 18 //여기 decimal처리해야할듯
         );
 
         const [x, y] = [_x, _y].map((token) => token.toString());
-        expect(x).to.equal(params[i].x.toString());
-        expect(y).to.equal(params[i].y.toString());
+        expect(x).to.equal(tc.x.toString());
+        expect(y).to.equal(tc.y.toString());
 
         // Additional assertions 여기는 차후적으로 추가하기
         // require.True(t, tc.pc * tc.rx >= x.Int64() * tc.ps);
@@ -126,7 +126,6 @@ describe("Pool", async () => {
         pc: 1000, // expected minted pool coin amount
       },
       {
-        // TODO: 지금은 X기준으로 해서 되는데 바뀌면 안되니까 나중에 수정하기
         name: "unbalanced deposit",
         rx: 2000, // reserve balance
         ry: 100, // reserve balance
@@ -215,7 +214,7 @@ describe("Pool", async () => {
       },
     ];
     for (let i = 0; i < params.length; i++) {
-      it(`(${params[i].name}) Should return the correct amount of pool coins`, async () => {
+      it(`(${params[i].name}) Should return the correct amount of pool coins and accepted x,y`, async () => {
         await contract.createPool(params[i].rx, params[i].ry, params[i].ps);
         const [_ax, _ay, _pc] = await contract.callStatic.deposit(
           params[i].x,

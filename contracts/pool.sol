@@ -82,9 +82,6 @@ contract PoolContract {
          ..
          */
         require(x > 0 && y > 0, "invalid deposit amount");
-        // uint256 pc;
-        // uint256 ax;
-        // uint256 ay;
 
         uint256 _price = price(); // decimal 나중에 없애기
         uint256 ax = x;
@@ -93,26 +90,24 @@ contract PoolContract {
 
         // when pool coin mint decimal, revert the tx
         if (pc == 0) return (0, 0, 0);
+
+        // bool priceIsOne = pool.Rx.div(pool.Ry) == 1 && pool.Rx % pool.Ry == 0;
         // decimal truncation case 1 handler
+        // FIXME: 여기 로직을 잘못만들었어
         if (ay > y) {
             ay = y;
-            while (true) {
-                // FIXME: 여기 로직을 잘못만들었어
-                // ax1쪽이 분수가 나올수 밖에 없는 구조였던거지
-                uint256 _ax1 = ((pool.Rx * ay).ToDec()).div(pool.Ry);
-                uint256 _ax2 = ((pool.Rx * ay).div(pool.Ry)).ToDec();
-                // console.log("_ax1", _ax1);
-                // console.log("_ax2", _ax2);
-                if (_ax1 != _ax2) {
-                    ay = ay.sub(one);
-                } else {
-                    ax = (pool.Rx.mul(ay)).div(pool.Ry);
-                    pc = (ax.mul(pool.Ps)).div(pool.Rx);
-                    console.log("ax", ax);
-                    console.log("ay", ay);
-                    break;
-                }
-            }
+            // while (true) {
+            //     uint256 _ax1 = ((pool.Rx * ay).mul(10)).div(pool.Ry);
+            //     uint256 _ax2 = ((pool.Rx * ay).div(pool.Ry)).mul(10);
+
+            //     if (_ax1 != _ax2) {
+            //         ay = ay.sub(one);
+            //     } else {
+            ax = (pool.Rx.mul(ay)).div(pool.Ry);
+            pc = (ax.mul(pool.Ps)).div(pool.Rx);
+            // break;
+            // }
+            // }
         }
         // decimal truncation case 2 handler
 
