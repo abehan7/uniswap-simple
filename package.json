@@ -22,6 +22,6 @@
     "t": "npx hardhat test test",
     "c": "npx hardhat compile",
     "dev": "concurrently \"tsc -w\" \"nodemon dist/index.js\"",
-    "test": "tsc && node dist/__test__.js"
+    "test": "tsc && node dist/test/__test__.js"
   }
 }
