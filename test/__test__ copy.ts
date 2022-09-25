@@ -57,19 +57,16 @@ class Deposit {
     let ax: number, pc: number;
 
     // 여기부터 반복
-    // while (true) {
-    const [ax1, pc1] = this.getAxAy(ay);
-    const [ax2, pc2] = this.getAxAy(ay - 1);
-    ax = ax1;
-    pc = pc1;
-    if (this.cutDec(pc1) === this.cutDec(pc2)) {
-      pc = this.cutDec(pc1);
-      const poolCoinRatio = pc / this.tc.ps;
-      ax = poolCoinRatio * this.tc.rx;
-      ay = (this.tc.ry / this.tc.rx) * ax;
-    }
+    while (true) {
+      const [ax1, pc1] = this.getAxAy(ay);
+      const [ax2, pc2] = this.getAxAy(ay - 1);
+      ax = ax1;
+      pc = pc1;
+      if (this.cutDec(pc1) > this.cutDec(pc2)) break;
+      pc = pc2;
 
-    // }
+      ay--;
+    }
 
     console.log(
       `${this.tc.name} >> ax: ${parseInt(ax.toString())} ay: ${parseInt(
