@@ -92,7 +92,7 @@ contract PoolContract {
         if (pc == 0) return (0, 0, 0);
 
         // bool priceIsOne = pool.Rx.div(pool.Ry) == 1 && pool.Rx % pool.Ry == 0;
-        // decimal truncation case 1 handler
+        // decimal truncation case 2 handler
         // FIXME: 여기 로직을 잘못만들었어
         if (ay > y) {
             ay = y;
@@ -109,7 +109,7 @@ contract PoolContract {
             // }
             // }
         }
-        // decimal truncation case 2 handler
+        // decimal truncation case 1 handler
 
         // ==================================================================
         // 	// update pool states
